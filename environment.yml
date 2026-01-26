@@ -1,0 +1,14 @@
+name: fastapi-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - fastapi
+  - uvicorn
+  - python-multipart
+  - pydantic
+  - sqlalchemy
+  - aiomysql
+  - passlib=1.7.4
+  - bcrypt
