@@ -1,8 +1,11 @@
 # 根据用户名查询数据库
+import uuid
+from datetime import datetime, timedelta
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toutiao_backend.models.users import User
+from toutiao_backend.models.users import User, UserToken
 from toutiao_backend.schemas.user import UserRequest
 from toutiao_backend.utils import security
 
@@ -25,3 +28,29 @@ async def create_user(db: AsyncSession, user_data: UserRequest):
     return user
 
 
+
+async def create_token(db: AsyncSession, user_id: int):
+    # 生成 Token + 设置过期时间
+    token = str(uuid.uuid4())
+    expires_at = datetime.now() + timedelta(days=7)
+
+    # 查询当前用户是否已有 Token
+    query = select(UserToken).where(UserToken.user_id == user_id)
+    result = await db.execute(query)
+    user_token = result.scalar_one_or_none()
+
+    if user_token:
+        # 已存在则更新
+        user_token.token = token
+        user_token.expires_at = expires_at
+    else:
+        # 不存在则创建
+        user_token = UserToken(
+            user_id=user_id,
+            token=token,
+            expires_at=expires_at,
+        )
+        db.add(user_token)
+
+    await db.commit()
+    return token
