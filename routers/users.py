@@ -2,10 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from toutiao_backend.models.users import User
 from toutiao_backend.config import db_conf
 from toutiao_backend.crud import users
 from toutiao_backend.schemas.user import UserRequest, UserAuthResponse, UserInfoResponse
 from toutiao_backend.utils.responses import success_response
+from toutiao_backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/user", tags=["user"])
 
@@ -37,3 +39,8 @@ async def login(user_data: UserRequest, db: AsyncSession = Depends(db_conf.get_d
     token = await users.create_token(db, user.id)
     response_data = UserAuthResponse(token=token, userInfo=UserInfoResponse.model_validate(user))
     return success_response(message="登录成功!", data=response_data)
+
+# 查Token查用户，封装CURD -> 功能整合成一个工具函数 -> 路由导入使用：引入注入
+# @router.get("/info")
+# async def get_user_info(user: User = Depends(get_current_user)):
+#     return success_response(message="获取用户信息成功", data=UserInfoResponse.model_validate(user))
