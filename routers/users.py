@@ -4,7 +4,8 @@ from starlette import status
 
 from toutiao_backend.config import db_conf
 from toutiao_backend.crud import users
-from toutiao_backend.schemas.user import UserRequest
+from toutiao_backend.schemas.user import UserRequest, UserAuthResponse, UserInfoResponse
+from toutiao_backend.utils.responses import success_response
 
 router = APIRouter(prefix="/api/user", tags=["user"])
 
@@ -24,16 +25,5 @@ async def register(
     user = await users.create_user(db, user_data)
     token = await users.create_token(db, user.id)
     
-    return {
-        "code": 200,
-        "message": "注册成功",
-        "data": {
-            "token": token,
-            "userInfo": {
-                "id": user.id,
-                "username": user.username,
-                "bio": user.bio,
-                "avatar": user.avatar,
-            }
-        }
-    }
+    response_data = UserAuthResponse(token=token, userInfo=UserInfoResponse.model_validate(user))
+    return success_response(message="注册成功", data=response_data)
