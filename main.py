@@ -3,9 +3,10 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from toutiao_backend.routers import news, users
+from toutiao_backend.utils.exception_handlers import register_exception_handlers
 
 app = FastAPI()
-
+register_exception_handlers(app)
 
 # 允许的来源（可以是域名列表）
 origins = [
