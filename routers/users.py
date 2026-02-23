@@ -5,7 +5,7 @@ from starlette import status
 from toutiao_backend.models.users import User
 from toutiao_backend.config import db_conf
 from toutiao_backend.crud import users
-from toutiao_backend.schemas.user import UserRequest, UserAuthResponse, UserInfoResponse
+from toutiao_backend.schemas.user import UserRequest, UserAuthResponse, UserInfoResponse, UserUpdateRequest
 from toutiao_backend.utils.responses import success_response
 from toutiao_backend.utils.auth import get_current_user
 
@@ -40,7 +40,19 @@ async def login(user_data: UserRequest, db: AsyncSession = Depends(db_conf.get_d
     response_data = UserAuthResponse(token=token, userInfo=UserInfoResponse.model_validate(user))
     return success_response(message="登录成功!", data=response_data)
 
-# 查Token查用户，封装CURD -> 功能整合成一个工具函数 -> 路由导入使用：引入注入
+# 查Token查用户，封装CURD -> 功能整合成一个工具函数 -> 路由导入使用：依赖注入
 @router.get("/info")
 async def get_user_info(user: User = Depends(get_current_user)):
     return success_response(message="获取用户信息成功", data=UserInfoResponse.model_validate(user))
+
+
+# 修改用户信息：验证 Token → 更新（用户输入数据 put 提交 + 请求体参数 + 定义 Pydantic 模型类）→ 响应结果
+# 参数：用户输入的 + 验证 Token 的 + db（调用更新的方法）
+@router.put("/update")
+async def update_user_info(user_data: UserUpdateRequest, user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(db_conf.get_database)
+):
+    user = await users.update_user(db, user.username, user_data)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未认证的用户")
+    return success_response(message="更新用户信息成功", data=UserInfoResponse.model_validate(user))
