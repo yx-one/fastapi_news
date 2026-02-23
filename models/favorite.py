@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import UniqueConstraint, Index, INTEGER, ForeignKey, DateTime, func
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
+from sqlalchemy import UniqueConstraint, Index, INTEGER, DateTime, func
+from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase
 
 
 class Base(DeclarativeBase):
     pass
+
 
 class Favorite(Base):
     """收藏表 ORM 模型"""
@@ -20,13 +21,9 @@ class Favorite(Base):
 
     id: Mapped[int] = mapped_column(INTEGER, primary_key=True, autoincrement=True, comment="收藏ID")
 
-    user_id: Mapped[int] = mapped_column(INTEGER, ForeignKey("user.id", ondelete="CASCADE", onupdate="CASCADE"),
-        nullable=False, comment="用户ID",
-    )
+    user_id: Mapped[int] = mapped_column(INTEGER, nullable=False, comment="用户ID")
 
-    news_id: Mapped[int] = mapped_column(
-        INTEGER, ForeignKey("news.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False, comment="新闻ID",
-    )
+    news_id: Mapped[int] = mapped_column(INTEGER, nullable=False, comment="新闻ID")
 
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.current_timestamp(),
         comment="收藏时间",
