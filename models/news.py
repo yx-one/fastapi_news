@@ -3,14 +3,8 @@ from typing import Optional
 
 from sqlalchemy import DateTime, func, Integer, String, ForeignKey, Text, Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from schemas.base import Base
 
-
-class Base(DeclarativeBase):
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, insert_default=func.now(), default=datetime.now, comment="创建时间")
-
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, insert_default=func.now(), onupdate=func.now(), default=datetime.now, comment="修改时间")
 
 
 class Category(Base):
@@ -43,6 +37,12 @@ class News(Base):
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey('news_category.id'), nullable=False, comment="分类ID")
     views: Mapped[int] = mapped_column(Integer, default=0, nullable=False, comment="浏览量")
     publish_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, comment="发布时间")
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, insert_default=func.now(), default=datetime.now, comment="创建时间")
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, insert_default=func.now(), onupdate=func.now(), default=datetime.now, comment="修改时间")
 
     def __repr__(self):
         return f"<News(id={self.id}, title='{self.title}', views={self.views})>"

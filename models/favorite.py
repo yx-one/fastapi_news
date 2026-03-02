@@ -2,11 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import UniqueConstraint, Index, INTEGER, DateTime, func
 from sqlalchemy.orm import mapped_column, Mapped, DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
-
+from schemas.base import Base
 
 class Favorite(Base):
     """收藏表 ORM 模型"""

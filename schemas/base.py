@@ -2,7 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
+from sqlalchemy.orm import DeclarativeBase
 
+
+class Base(DeclarativeBase):
+    pass
 
 class NewsItemBase(BaseModel):
     id: int
