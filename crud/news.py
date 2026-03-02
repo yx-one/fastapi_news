@@ -1,6 +1,6 @@
 from sqlalchemy import select, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from toutiao_backend.models.news import Category, News
+from models.news import Category, News
 
 
 async def get_categories(db: AsyncSession, skip:int=0, limit:int=1000):
